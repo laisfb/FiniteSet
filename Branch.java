@@ -27,8 +27,7 @@ interface FiniteSet {
     //Returns a new set containing everything that is both in the current set and in s
     public FiniteSet inter(FiniteSet s);
 
-    //Returns a new set containing everything in s except those that are in the
-    //current set. (S - this)
+    //Returns a new set containing everything in s except those that are in the current set
     public FiniteSet diff(FiniteSet s);
 
     //Determines if the currenct set and s contain the same elements
@@ -85,13 +84,16 @@ class Leaf implements FiniteSet {
     public boolean subset(FiniteSet s) {
 	return s.isEmpty(); //s in only a subset of Leaf if s is also a Leaf
     }
+
+    public String toString() {
+	return "";
+    }
 }
 
 class Branch implements FiniteSet {
     int elt;
     FiniteSet left;
     FiniteSet right;
-    int n = 0;
 
     private static int NUM_MAX = 100; //Greatest possible value
     
@@ -99,7 +101,6 @@ class Branch implements FiniteSet {
 	this.elt = e;
 	this.left = l;
 	this.right = r;
-	this.n = l.cardinality() + r.cardinality() + 1;
     }
 
     public FiniteSet empty() {
@@ -107,7 +108,7 @@ class Branch implements FiniteSet {
     }
 
     public int cardinality() {
-	return this.n;
+	return (left.cardinality() + right.cardinality() + 1);
     }
 
     public boolean isEmpty() {
@@ -140,25 +141,42 @@ class Branch implements FiniteSet {
 	else
 	    return new Branch(this.elt, this.left, (this.right).remove(elem));
     }
-    
+
     public FiniteSet union(FiniteSet s) {
-	return this;
+	//union of left branch with right branch with s
+	//then add "elt" ---> func add won't allow it to have duplicates
+	return (((this.left).union(this.right)).union(s)).add(this.elt);
     }
 
     public FiniteSet inter(FiniteSet s) {
-	return this;
+	if(s.member(this.elt))
+	    return new Branch(this.elt, s.inter(this.left), s.inter(this.right));
+	else //union of both intersections
+	    return (s.inter(this.left)).union(s.inter(this.right));
     }
-    
+
+    //S - this
     public FiniteSet diff(FiniteSet s) {
-	return this;
+	//if "elt" is in s, then it can't be in "diff"
+	if(s.member(this.elt))
+	    //remove elt from s and find the difference between
+	    //s and what's left of (this)
+	    return ((this.left).union(this.right)).diff(s.remove(this.elt));
+	else
+	    return ((this.left).union(this.right)).diff(s);
+	    
     }
     
     public boolean equal(FiniteSet s) {
-	return false;
+	//if the difference between them is empty, then they are equal
+	return (this.diff(s)).equal(new Leaf());
     }
-    
+
+    //this C s
     public boolean subset(FiniteSet s) {
-	return false;
+	//if the difference between (this) and the intersection of them is empty
+	//then (this) is a subset of s
+	return ((this.inter(s)).diff(this)).equal(new Leaf());
     }
 
     public static FiniteSet randomSet(int size) {
@@ -170,6 +188,10 @@ class Branch implements FiniteSet {
 	    return new Branch(num, randomSet(size/2), randomSet(size/2));
 	}
     }
+
+    public String toString() {
+	return ( this.elt + " " + this.left + " " + this.right ) ;
+    }
     
     public static void main(String[] args) {
 
@@ -177,6 +199,72 @@ class Branch implements FiniteSet {
 	int size = rand.nextInt(21); //Returns a value in the range [0,21)	
 	FiniteSet test = randomSet(size);
 
-        System.out.println("--- Created a FiniteSet ---");
+        System.out.println("--- Created a random FiniteSet ---\n");
+	System.out.println("--- Some tests for a leaf ---");
+
+	FiniteSet tree1 = new Leaf();	
+	System.out.println("Cardinality: " + tree1.cardinality() + " (should be 0)");
+	System.out.println("Is it empty?: " + tree1.isEmpty() + " (should be true)");
+	System.out.println("Is 5 a member?: " + tree1.member(5) + " (should be false)");
+	
+
+	System.out.println("\n--- Some tests for a branch ---");
+	FiniteSet tree2 = new Branch(10, new Leaf(), new Leaf());	
+	System.out.println("Cardinality: " + tree2.cardinality() + " (should be 1)");
+	System.out.println("Is it empty?: " + tree2.isEmpty() + " (should be false)");
+
+	System.out.println("Adding 8 and 20 to 'tree2' and sending it back to 'tree2");
+	tree2 = tree2.add(20);
+	tree2 = tree2.add(8);	
+	System.out.println("Cardinality: " + tree2.cardinality() + " (should be 3)");
+
+	System.out.println("Removing 15 from 'tree2' and sending it back to 'tree2'");
+	tree2 = tree2.remove(15);
+	System.out.println("Cardinality: " + tree2.cardinality() + " (should be 3)");
+
+	System.out.println("Removing 15 from 'tree2' and sending it back to 'tree2'");
+	tree2 = tree2.remove(15);
+	System.out.println("Cardinality: " + tree2.cardinality() + " (should be 3)");
+
+	System.out.println("Trying to add 20 again and sending it back to 'tree2");
+	tree2 = tree2.add(20);
+	System.out.println("Cardinality: " + tree2.cardinality() + " (should be 3)");
+
+	System.out.println("Removing 8 from 'tree2' and sending it back to 'tree2");
+	tree2 = tree2.remove(8);
+	System.out.println("Cardinality: " + tree2.cardinality() + " (should be 2)");
+	
+	System.out.println("Making 'tree2' be empty and sending it to 'tree3'");
+	FiniteSet tree3 = tree2.empty();
+	System.out.println("Cardinality: " + tree3.cardinality() + " (should be 0)");
+
+	System.out.println("Adding numbers to 'tree3' and sending it back to 'tree3");
+	tree3 = tree3.add(20);
+	tree3 = tree3.add(10);
+	tree3 = tree3.add(8);
+	tree3 = tree3.add(15);
+	tree3 = tree3.add(3);	
+	System.out.println("Cardinality: " + tree3.cardinality() + " (should be 5)");
+
+	System.out.println("\nTree2: " + tree2);
+	System.out.println("Tree3: " + tree3);
+
+	System.out.println("\nIntersection of 'tree2' and 'tree3': " + tree2.inter(tree3) + " (should contain 10 20)");
+	System.out.println("Union of 'tree2' and 'tree3': " + tree2.union(tree3) + "\n(should be equal to tree3)");
+
+	System.out.println("\nAdding 2 to 'tree2' and sending it back to 'tree2");
+	tree2 = tree2.add(2);
+	System.out.println("Union of 'tree2' and 'tree3': " + tree2.union(tree3));
+	System.out.println("Removing 2 to 'tree2' and sending it back to 'tree2");
+	tree2 = tree2.remove(2);
+  
+	System.out.println("\ntree3 - tree2: " + tree2.diff(tree3) + " (should contain 8 3 15)");
+	System.out.println("tree2 - tree3: " + tree3.diff(tree2) + " (should be empty)");
+	
+	System.out.println("\nIs 'tree2' equal to 'tree3'?: " + tree2.equal(tree3) + " (should be false)");
+	System.out.println("Is 'tree2' a subset of 'tree3'?: " + tree2.subset(tree3) + " (should be true)");
+	System.out.println("Is 'tree3' a subset of 'tree2'?: " + tree3.subset(tree2) + " (should be false)");
+	
+	
     }
 }
