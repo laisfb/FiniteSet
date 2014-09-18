@@ -100,9 +100,27 @@ public class Branch implements FiniteSet {
     
     public static void main(String[] args) {
 
-	Test set = Test.randomSet();
+	FiniteSet randomSet = Test.randomSet();
+        System.out.println("\nRandomSet: " + randomSet);
+	Test.testIsEmpty(randomSet);
+	Test.testEmpty(randomSet);
 
-        System.out.println("--- Created a random FiniteSet ---\n");
+        System.out.println("---------------------------");
+	FiniteSet mySet1 = Test.mySet(1);
+	FiniteSet mySet2 = Test.mySet(2);
+        FiniteSet mySet3 = Test.mySet(3);
+        System.out.println("MySet1: " + mySet1);
+	Test.testCardinality(mySet1);
+	Test.testMember(mySet1, 14);
+	Test.testMember(mySet1, 20);
+
+        System.out.println("---------------------------");
+        System.out.println("\nMySet2: " + mySet2);
+	Test.testCardinality(mySet2);
+        System.out.println("\nMySet3: " + mySet3);
+	Test.testCardinality(mySet3);
+
+        System.out.println("---------------------------");
 	
 	
     }

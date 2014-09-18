@@ -83,7 +83,7 @@ public class Branch implements FiniteSet {
 	if(s.cardinality() != this.cardinality())
 	    return false;
 	else
-	    return (this.diff(s)).equal(new Leaf()); 
+	    return (this.diff(s)).isEmpty(); 
 	    //if the difference between them is empty, then they are equal
     }
 
@@ -91,7 +91,7 @@ public class Branch implements FiniteSet {
     public boolean subset(FiniteSet s) {
 	//if the difference between (this) and the intersection of them is empty
 	//then (this) is a subset of s
-	return (this.diff(this.inter(s))).equal(new Leaf());
+	return (s.inter(this)).diff(this).isEmpty();
     }
 
     public String toString() {
@@ -100,11 +100,53 @@ public class Branch implements FiniteSet {
     
     public static void main(String[] args) {
 
-	FiniteSet set = Test.randomSet();
+	FiniteSet randomSet = Test.randomSet();
+        System.out.println("\nRandomSet: " + randomSet);
+	Test.testIsEmpty(randomSet);
+	Test.testEmpty(randomSet);
 
-        System.out.println("--- Created a random FiniteSet ---\n");
-	System.out.println(set);
-	
+        System.out.println("---------------------------");
+	FiniteSet mySet1 = Test.mySet(1);
+	FiniteSet mySet2 = Test.mySet(2);
+        FiniteSet mySet3 = Test.mySet(3);
+        System.out.println("MySet1: " + mySet1);
+	Test.testCardinality(mySet1);
+	Test.testMember(mySet1, 14);
+	Test.testMember(mySet1, 20);
+	FiniteSet newSet1 = Test.testRemove(mySet1, 25);
+	mySet1 = Test.testAdd(newSet1, 25);
+
+        System.out.println("---------------------------");
+        System.out.println("MySet2: " + mySet2);
+	Test.testCardinality(mySet2);
+        System.out.println("\nMySet3: " + mySet3);
+	Test.testCardinality(mySet3);
+
+        System.out.println("---------------------------");
+        System.out.print("Union of mySet1 and mySet2: ");
+	Test.testUnion(mySet1, mySet2);
+        System.out.print("Union of mySet2 and mySet3: ");
+	Test.testUnion(mySet2, mySet3);
+        System.out.print("Inter of mySet1 and mySet3: ");
+	Test.testInter(mySet1, mySet3);
+        System.out.print("Inter of mySet2 and mySet3: ");
+	Test.testInter(mySet2, mySet3);
+
+        System.out.println("---------------------------");
+	System.out.print("Difference between mySet1 and mySet2 (mySet1 - mySet2): ");
+	Test.testDiff(mySet2, mySet1);
+	System.out.print("Difference between mySet2 and mySet1 (mySet2 - mySet1): ");
+	Test.testDiff(mySet1, mySet2);
+	System.out.print("Difference between mySet3 and mySet2 (mySet3 - mySet2): ");
+	Test.testDiff(mySet2, mySet3);
+        System.out.print("Is mySet2 equal to mySet3?: ");
+	Test.testEqual(mySet2, mySet3);
+        System.out.print("Is mySet2 a subset of mySet1?: ");
+	Test.testSubset(mySet2, mySet1);
+        System.out.print("Is mySet1 a subset of mySet2?: ");
+	Test.testSubset(mySet1, mySet2);
+        System.out.print("Is mySet3 a subset of mySet1?: ");
+	Test.testSubset(mySet3, mySet1);
 	
     }
 }

@@ -13,13 +13,82 @@ public class Test {
 	    return new Leaf();
 	else {
 	    Random rand = new Random();
-	    int num = randomInt(1000);
+	    int num = randomInt(100);
 	    Branch b = new Branch(num);
 	    for(int i=0; i<size; i++) {
-		num = randomInt(1000);
-		b.add(num);
+		num = randomInt(100);
+		b = (Branch) b.add(num);
 	    }
+	    return b;
 	}
     }
+
+    public static FiniteSet mySet(int num) {
+	Branch b = new Branch(10);
+	
+	switch(num) {
+	  case 1:
+	      b = (Branch) b.add(5);
+	      b = (Branch) b.add(7);
+	      b = (Branch) b.add(25);
+	      b = (Branch) b.add(43);
+	      b = (Branch) b.add(14);
+	      b = (Branch) b.add(37);
+	      b = (Branch) b.remove(10);
+	    break;
+	    
+	  case 2:
+	      b = (Branch) b.add(7);
+	      b = (Branch) b.add(25);
+	      b = (Branch) b.add(37);
+	      b = (Branch) b.remove(10);
+	    break;
+	    
+	  case 3:
+	      b = (Branch) b.add(5);
+	      b = (Branch) b.add(43);
+	      b = (Branch) b.add(14);
+	      b = (Branch) b.add(59);
+	      b = (Branch) b.remove(10);
+	    break;
+	    
+	  default:
+	      return randomSet();
+	}
+
+	return b;
+    }
+
+    
+    
+    public static void testEmpty(FiniteSet set) {
+	System.out.println("After empting the set: " + set.empty());
+    }
+
+    public static void testCardinality(FiniteSet set) {
+	System.out.println("Cardinality: " + set.cardinality());
+    }
+   
+    public static void testIsEmpty(FiniteSet set) {
+	System.out.println("Is this set empty?: " + set.isEmpty());
+    }
+
+    public static void testMember(FiniteSet set, int elem) {
+	System.out.println("Is " + elem + " in the set?: " + set.member(elem));
+    }
+
+    public static void add(int elem){}
+    
+    public static void remove(int elem){}
+    
+    public static void union(FiniteSet s){}
+
+    public static void inter(FiniteSet s){}
+
+    public static void diff(FiniteSet s){}
+
+    public static void equal(FiniteSet s){}
+    
+    public static void subset(FiniteSet s){}
     
 }
